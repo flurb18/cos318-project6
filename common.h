@@ -115,6 +115,7 @@ typedef struct {
     char links;         /* number of links to the i-node */
     int size;           /* file size in bytes */
     int numBlocks;      /* number of blocks used by the file */
+    int charPointer;    /* current character pointer in file */
 } fileStat;
 
 /*	Note that this struct only allocates space for the size element.
