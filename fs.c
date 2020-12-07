@@ -15,6 +15,8 @@
 #define ERROR_MSG(m)
 #endif
 
+
+
 void 
 fs_init( void) {
     block_init();
@@ -38,7 +40,29 @@ fs_close( int fd) {
 
 int 
 fs_read( int fd, char *buf, int count) {
-    return -1;
+   int i;
+   fileStat fp;
+   int charpointer;
+
+   assert (files[fd] != NULL);
+   fp = files[fd];
+   charpointer = fp->charPointer;
+
+   if (count == 0) return -1;
+   else
+   {
+      for (i = 0; i < count; i++) 
+      {  
+         /* return number chars read if EOF reached before count */
+         if (charpointer == EOF) return i;
+         else (
+            buf[i] = fp->contents->body[charpointer];
+            charpointer++;
+         )
+
+      }
+   }
+   return count;
 }
     
 int 
