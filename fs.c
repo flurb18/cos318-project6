@@ -98,12 +98,12 @@ fs_read( int fd, char *buf, int count) {
         {  
           /* return number chars read if EOF reached before count */
           if (dataPointer == (fp->size)) return i;
-          else (
+          else {
                 block_read(dataPointer, buf[i]);
                 dataPointer;
-                )
+          }
 
-                 }
+        }
     }
   return count;
 }
