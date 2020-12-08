@@ -49,6 +49,7 @@ fs_read( int fd, char *buf, int count) {
 
    assert (iNodes[fd] != NULL);
    fp = iNodes[fd];
+   dataPointer = fp->data;
 
    if (count == 0) return -1;
    else
@@ -56,9 +57,9 @@ fs_read( int fd, char *buf, int count) {
       for (i = 0; i < count; i++) 
       {  
          /* return number chars read if EOF reached before count */
-         if (fp->data == EOF) return i;
+         if (*(fp->data) == EOF) return i;
          else (
-            buf[i] = (char)fp->data;
+            buf[i] = (char)*(fp->data);
             fp->data++;
          )
 
@@ -73,20 +74,17 @@ fs_write( int fd, char *buf, int count) {
    iNode fp;
    int addedBytes = 0;
    int starterBits;
-   int* dataPointer;
    
    assert (iNodes[fd] != NULL);
    fp = iNodes[fd];
-   dataPointer = fp->data;
 
    if (fp->size == PAGE_SIZE) return -1;
    else {
-      starterBits = (fp->filestat->size) % 8;
+      starterBits = (fp->info->size) % 8;
       for (i = 0; i < count; i++) {
          if (fp->size == PAGE_SIZE) return addedBytes;
-         dataPointer = buf[i];
+         *(fp->data) = buf[i];
          fp->data++;
-         dataPointer++;
          starterbits++;
          if (starterbits % 8 == 0) addedBytes++;
       }

@@ -10,7 +10,7 @@
 
 struct iNode{
    int permissions; /* specifies read write permissions */
-   int data; /* pointer to data on disk block */
+   int* data; /* pointer to data on disk block */
    int fd; /*file descriptor number */
    fileStat info; /* file stats for this file/directory */
 };
