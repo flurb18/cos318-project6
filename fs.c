@@ -89,7 +89,11 @@ fs_write( int fd, char *buf, int count) {
          else *(fp->data) = '\0';
          fp->data++;
          starterbits++;
-         if (starterbits % 8 == 0) addedBytes++;
+         if (starterbits % 8 == 0)
+         {
+            addedBytes++;
+            fp->info->size++;
+         }
       }
    }
    
