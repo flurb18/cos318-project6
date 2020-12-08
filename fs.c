@@ -73,27 +73,36 @@ fs_write( int fd, char *buf, int count) {
    int i;
    iNode fp;
    int addedBytes = 0;
-   int starterBits;
    int length;
    
    assert (iNodes[fd] != NULL);
    fp = iNodes[fd];
    length = sizeof buf / sizeof *buf;
 
-   if (fp->size == PAGE_SIZE) return -1;
+   if (fp->info->size == PAGE_SIZE) return -1;
    else {
-      starterBits = (fp->info->size) % 8;
-      for (i = 0; i < count; i++) {
-         if (fp->size == PAGE_SIZE) return addedBytes;
-         if (i < length)  *(fp->data) = buf[i];
-         else *(fp->data) = '\0';
-         fp->data++;
-         starterbits++;
-         if (starterbits % 8 == 0)
+      if (fp->info->size < fp->data)
+      {
+         *(fp->info->size) = buf[0];
+         fp->info->size++;
+         while (fp->info->size < fp->data) 
          {
-            addedBytes++;
+            if (fp->info->size == PAGE_SIZE) return addedBytes;
+            *(fp->info->size) = '\0';
             fp->info->size++;
          }
+         beginval = 1;
+      }
+      else beginval = 0;
+      for (i = beginval; i < count; i++) {
+         if (fp->info->size == PAGE_SIZE) return addedBytes;
+
+         if (i < length)  *(fp->data) = buf[i];
+         else *(fp->data) = '\0';
+
+         fp->data++;
+         addedBytes++;
+         fp->info->size++;
       }
    }
    
@@ -102,7 +111,21 @@ fs_write( int fd, char *buf, int count) {
 
 int 
 fs_lseek( int fd, int offset) {
-    return -1;
+   iNode fp;
+   int size;
+ 
+   assert (iNodes[fd] != NULL);
+   fp = iNodes[fd];
+   /*can't set beyong 4096 bytes (max file size) */
+   if (offset >= PAGE_SIZE) return -1;
+
+   /* adjusts size of page if offset is before EOF */
+   if (offset < fp->info->size) dp->info->size = offset;
+  
+   /* change data pointer regardless of if offset is beyond EOF */
+   fp->data = offset;
+   
+   return offset;
 }
 
 int 
