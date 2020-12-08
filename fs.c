@@ -45,11 +45,9 @@ int
 fs_read( int fd, char *buf, int count) {
    int i;
    iNode fp;
-   int dataPointer;
 
    assert (iNodes[fd] != NULL);
    fp = iNodes[fd];
-   datapointer = fp->data;
 
    if (count == 0) return -1;
    else
@@ -57,7 +55,7 @@ fs_read( int fd, char *buf, int count) {
       for (i = 0; i < count; i++) 
       {  
          /* return number chars read if EOF reached before count */
-         if (charpointer == EOF) return i;
+         if (fp->data == EOF) return i;
          else (
             buf[i] = (char)fp->data;
             fp->data++;
