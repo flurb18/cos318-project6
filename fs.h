@@ -13,6 +13,8 @@ struct iNode{
    int* data; /* pointer to data on disk block */
    int fd; /*file descriptor number */
    fileStat info; /* file stats for this file/directory */
+   /* not real implementation, just a filler while we think */
+   int* linkedFiles; /* hash table for linked files */ 
 };
 
 void fs_init( void);
