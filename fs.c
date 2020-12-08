@@ -74,16 +74,19 @@ fs_write( int fd, char *buf, int count) {
    iNode fp;
    int addedBytes = 0;
    int starterBits;
+   int length;
    
    assert (iNodes[fd] != NULL);
    fp = iNodes[fd];
+   length = sizeof buf / sizeof *buf;
 
    if (fp->size == PAGE_SIZE) return -1;
    else {
       starterBits = (fp->info->size) % 8;
       for (i = 0; i < count; i++) {
          if (fp->size == PAGE_SIZE) return addedBytes;
-         *(fp->data) = buf[i];
+         if (i < length)  *(fp->data) = buf[i];
+         else *(fp->data) = '\0';
          fp->data++;
          starterbits++;
          if (starterbits % 8 == 0) addedBytes++;
