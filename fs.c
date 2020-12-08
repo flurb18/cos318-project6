@@ -23,6 +23,8 @@ iNode filesAndDir[];
 /* array of file/directory names at index fd. same length as files... */
 char* names[];
 
+static int wd; /* Working directory */
+
 void 
 fs_init( void) {
     block_init();
@@ -181,12 +183,12 @@ fs_rmdir( char *fileName) {
    int length;
    iNode directory;
    
-   length = sizeof names / sizeof names[0];
+   length = sizeof(names) / sizeof(names[0]);
    
    for(i = 0; i < length; i++) 
    {
       /* if the directory exists */
-      if (strcmp(fileName, names[i] = 0)) 
+      if (strcmp(fileName, names[i] == 0)) 
       {
          directory = filesAndDir[i];
          /* error if trying to remove a file using rmdir */
@@ -208,7 +210,12 @@ fs_rmdir( char *fileName) {
 
 int 
 fs_cd( char *dirName) {
-    return -1;
+   int i;
+
+   if (strcmp(dirName, ".") == 0) {
+      // Already at current directory
+      return 0;
+   }
 }
 
 int 
@@ -223,6 +230,23 @@ fs_unlink( char *fileName) {
 
 int 
 fs_stat( char *fileName, fileStat *buf) {
-    return -1;
+   int i;
+
+   if (filename == NULL || buf == NULL) {
+      return -1;
+   }
+
+   for (i = 0; i < sizeof(names) / sizeof(names[0]); i++) {
+      if (strcmp(fileName, names[i]) == 0) {
+	 // Copy information from inode to fileStat once match is found
+	 buf->inodeNo = i;
+	 buf->type = filesAndDir[i]->type;
+	 buf->links = filesAndDir[i]->links;
+	 buf->size = filesAndDir[i]->size;
+	 buf->numBlocks = filesAndDir[i]->numBlocks;
+
+	 return 0;
+      }
+   }
 }
 

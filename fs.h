@@ -12,8 +12,12 @@ struct iNode{
    int permissions; /* specifies read write permissions */
    int* data; /* pointer to data on disk block */
    int fd; /*file descriptor number */
-   fileStat info; /* file stats for this file/directory */
    iNode* nextFile; /* pointer to next file */ 
+
+   short type; /* Type of file (DIRECTORY, FILE_TYPE, FREE_INODE) */
+   int size; /* File size in bytes */
+   char links; /* Number of links to the inode */
+   int numBlocks; /* Number of blocks used by the file */
 };
 
 
