@@ -15,7 +15,10 @@
 #define ERROR_MSG(m)
 #endif
 
-
+/* array of iNodes; feel free to change implementation */
+/* not quite sure what the size should be here; don't know how many
+   files and directories we can have */
+iNode iNodes[];
 
 void 
 fs_init( void) {
@@ -41,12 +44,12 @@ fs_close( int fd) {
 int 
 fs_read( int fd, char *buf, int count) {
    int i;
-   fileStat fp;
-   int charpointer;
+   iNode fp;
+   int dataPointer;
 
-   assert (files[fd] != NULL);
-   fp = files[fd];
-   charpointer = fp->charPointer;
+   assert (iNodes[fd] != NULL);
+   fp = iNodes[fd];
+   datapointer = fp->data;
 
    if (count == 0) return -1;
    else
@@ -56,8 +59,8 @@ fs_read( int fd, char *buf, int count) {
          /* return number chars read if EOF reached before count */
          if (charpointer == EOF) return i;
          else (
-            buf[i] = fp->contents->body[charpointer];
-            charpointer++;
+            buf[i] = (char)fp->data;
+            data++;
          )
 
       }
@@ -67,7 +70,8 @@ fs_read( int fd, char *buf, int count) {
     
 int 
 fs_write( int fd, char *buf, int count) {
-    return -1;
+   int i;
+   fileStat fp; 
 }
 
 int 

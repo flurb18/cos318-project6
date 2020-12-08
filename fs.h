@@ -8,6 +8,12 @@
 
 #define FS_SIZE 2048
 
+struct iNode{
+   int permissions; /* specifies read write permissions */
+   int* data; /* pointer to data on disk block */
+   int fd; /*file descriptor number */
+};
+
 void fs_init( void);
 int fs_mkfs( void);
 int fs_open( char *fileName, int flags);
