@@ -150,6 +150,7 @@ fs_mkdir( char *fileName) {
    char* slash = "/";
    int success;
 
+   wd = fs_open(fileName, FS_O_RDONLY);
    fdchild = fs_open(".",FS_O_RDONLY);
    fdparent = fs_open ("..", FS_O_RDONLY);
    childFile = filesAndDir[fdchild];
@@ -193,9 +194,11 @@ fs_rmdir( char *fileName) {
          directory = filesAndDir[i];
          /* error if trying to remove a file using rmdir */
          if (directory->info->type != DIRECTORY) return -1;
-         /* error if trying to remove dir with existing links */
-         if (directory->info->links > 0) return -1;
+         /* error if trying to remove dir with existing links
+            besdies link to self and parent */
+         if (directory->info->links > 2) return -1;
          /* free structs and NULL out array items */
+         wd = cd("..");
          free(directory->info);
          free(directory->data);
          free(directory->nextFile);
