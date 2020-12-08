@@ -7,6 +7,7 @@
 #include "common.h"
 #include "block.h"
 #include "fs.h"
+#include "memory.h"
 
 #ifdef FAKE
 #include <stdio.h>
@@ -69,7 +70,29 @@ fs_read( int fd, char *buf, int count) {
 int 
 fs_write( int fd, char *buf, int count) {
    int i;
-   fileStat fp; 
+   iNode fp;
+   int addedBytes = 0;
+   int starterBits;
+   int* dataPointer;
+   
+   assert (iNodes[fd] != NULL);
+   fp = iNodes[fd];
+   dataPointer = fp->data;
+
+   if (fp->size == PAGE_SIZE) return -1;
+   else {
+      starterBits = (fp->filestat->size) % 8;
+      for (i = 0; i < count; i++) {
+         if (fp->size == PAGE_SIZE) return addedBytes;
+         dataPointer = buf[i];
+         fp->data++;
+         dataPointer++;
+         starterbits++;
+         if (starterbits % 8 == 0) addedBytes++;
+      }
+   }
+   
+   return addedBytes;
 }
 
 int 
