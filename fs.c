@@ -19,7 +19,8 @@
 /* array of iNodes; feel free to change implementation */
 /* not quite sure what the size should be here; don't know how many
    files and directories we can have */
-iNode iNodes[];
+iNode files[];
+iNode directories[];
 
 void 
 fs_init( void) {
@@ -48,8 +49,8 @@ fs_read( int fd, char *buf, int count) {
    iNode fp;
    int dataPointer;
 
-   assert (iNodes[fd] != NULL);
-   fp = iNodes[fd];
+   assert (files[fd] != NULL);
+   fp = files[fd];
    dataPointer = fp->data;
 
    if (count == 0) return -1;
@@ -78,8 +79,8 @@ fs_write( int fd, char *buf, int count) {
    int length;
    char* endChar = '\0';
    
-   assert (iNodes[fd] != NULL);
-   fp = iNodes[fd];
+   assert (files[fd] != NULL);
+   fp = files[fd];
    dataPointer = fp->data;
    length = sizeof buf / sizeof *buf;
 
@@ -119,8 +120,8 @@ fs_lseek( int fd, int offset) {
    iNode fp;
    int size;
  
-   assert (iNodes[fd] != NULL);
-   fp = iNodes[fd];
+   assert (files[fd] != NULL);
+   fp = files[fd];
    /*can't set beyong 4096 bytes (max file size) */
    if (offset >= PAGE_SIZE) return -1;
 
@@ -135,7 +136,34 @@ fs_lseek( int fd, int offset) {
 
 int 
 fs_mkdir( char *fileName) {
-    return -1;
+   int fdchild;
+   int fdparent;
+   int i = 0;
+   iNode directory;
+   iNode childFile;
+   int length;
+
+   fdchild = fs_open(".",FS_O_RDONLY);
+   fdparent = fs_open ("..", FS_O_RDONLY);
+   childFile = files[fdchild];
+   length = sizeof directories / sizeof directories[0];
+   
+   while (directories[i] != NULL)
+      i++;
+   if (i < length) 
+   {
+      directory-> permissions = FS_O_RDONLY;
+      directory->data = childFile->data;
+      directory->fd = i;
+      directory->info->iNodeNo = i;
+      directory->info->type = DIRECTORY;
+      directory->info->links = 2;
+      directory->info->size = childFile->info->size;
+      directory->numBlocks = childFile->info->numBlocks;
+      /* need to add links once i figure out implementation */
+      return 0;
+   }
+   return -1;
 }
 
 int 
