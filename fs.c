@@ -17,6 +17,7 @@
 #define ERROR_MSG(m)
 #endif
 
+// need to change
 enum {
   MAX_INODES = 100;
 }
@@ -60,12 +61,24 @@ fs_mkfs( void) {
 
 int 
 fs_open( char *fileName, int flags) {
+  int i;
+  for (i = 0; i < MAX_INODES; i++) {
+    if (strcmp(fileName, names[i]) == 0) {
+      filesAndDir[i].permissions = flags;
+      return i;
+    }
+    if (filesAndDir[i].type == FREE_INODE) return i;
+  }
   return -1;
 }
 
 int 
 fs_close( int fd) {
-  return -1;
+  filesAndDir[fd].type = FREE_INODE;
+  filesAndDir[fd].permissions = 0;
+  filesAndDir[fd].size = 0;
+  filesAndDir[fd].link = 0;
+  filesAndDir[fd].numBlocks = 0;
 }
 
 int 
