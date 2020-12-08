@@ -8,6 +8,7 @@
 #include "block.h"
 #include "fs.h"
 #include "memory.h"
+#include <string.h>
 
 #ifdef FAKE
 #include <stdio.h>
@@ -62,7 +63,7 @@ fs_read( int fd, char *buf, int count) {
       for (i = 0; i < count; i++) 
       {  
          /* return number chars read if EOF reached before count */
-         if (dataPointer == (fp->info->size)) return i;
+         if (dataPointer == (fp->size)) return i;
          else (
             block_read(dataPointer, buf[i]);
             dataPointer;
@@ -87,31 +88,31 @@ fs_write( int fd, char *buf, int count) {
    dataPointer = fp->data;
    length = sizeof buf / sizeof *buf;
    
-   if (fp->info->size == PAGE_SIZE) return -1;
+   if (fp->size == PAGE_SIZE) return -1;
    else {
-      if (fp->info->size < dataPointer)
+      if (fp->size < dataPointer)
       {
-         block_write(fp->info->size, buf[0]);
-         fp->info->size++;
-         while (fp->info->size < dataPointer) 
+         block_write(fp->size, buf[0]);
+         fp->size++;
+         while (fp->size < dataPointer) 
          {
-            if (fp->info->size == PAGE_SIZE) return addedBytes;
-            block_write(fp->info->size, endchar);
-            fp->info->size++;
+            if (fp->size == PAGE_SIZE) return addedBytes;
+            block_write(fp->size, endchar);
+            fp->size++;
          }
          beginval = 1;
       }
       else beginval = 0;
 
       for (i = beginval; i < count; i++) {
-         if (fp->info->size == PAGE_SIZE) return addedBytes;
+         if (fp->size == PAGE_SIZE) return addedBytes;
 
          if (i < length)  block_write(dataPointer, buf[i]);
          else block_write(dataPointer, endchar);
 
          dataPointer++;
          addedBytes++;
-         fp->info->size++;
+         fp->size++;
       }
    }
    
@@ -129,7 +130,7 @@ fs_lseek( int fd, int offset) {
    if (offset >= PAGE_SIZE) return -1;
 
    /* adjusts size of page if offset is before EOF */
-   if (offset < fp->info->size) dp->info->size = offset;
+   if (offset < fp->size) fp->size = offset;
   
    /* change data pointer regardless of if offset is beyond EOF */
    fp->data = offset;
@@ -166,11 +167,11 @@ fs_mkdir( char *fileName) {
          directory->permissions = FS_O_RDONLY;
          directory->data = childFile->data;
          directory->fd = i;
-         directory->info->iNodeNo = i;
-         directory->info->type = DIRECTORY;
-         directory->info->links = 2;
-         directory->info->size = childFile->info->size;
-         directory->info->numBlocks = childFile->info->numBlocks;
+         directory->iNodeNo = i;
+         directory->type = DIRECTORY;
+         directory->links = 2;
+         directory->size = childFile->size;
+         directory->numBlocks = childFile->numBlocks;
          /* CALL FSLINK ONCE WE FIGURE OUT THAT IMPLEMENTATION */
          return 0;
       }
@@ -193,10 +194,10 @@ fs_rmdir( char *fileName) {
       {
          directory = filesAndDir[i];
          /* error if trying to remove a file using rmdir */
-         if (directory->info->type != DIRECTORY) return -1;
+         if (directory->type != DIRECTORY) return -1;
          /* error if trying to remove dir with existing links
             besdies link to self and parent */
-         if (directory->info->links > 2) return -1;
+         if (directory->links > 2) return -1;
          /* free structs and NULL out array items */
          wd = cd("..");
          free(directory->info);
