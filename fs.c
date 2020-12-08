@@ -84,7 +84,7 @@ fs_write( int fd, char *buf, int count) {
    fp = filesAndDir[fd];
    dataPointer = fp->data;
    length = sizeof buf / sizeof *buf;
-
+   
    if (fp->info->size == PAGE_SIZE) return -1;
    else {
       if (fp->info->size < dataPointer)
@@ -143,11 +143,16 @@ fs_mkdir( char *fileName) {
    iNode directory;
    iNode childFile;
    int length;
-   int openSpace;
+   char* childPath;
+   char* parentPath;
+   char* slash = "/";
+   int success;
 
    fdchild = fs_open(".",FS_O_RDONLY);
    fdparent = fs_open ("..", FS_O_RDONLY);
    childFile = filesAndDir[fdchild];
+   childPath = names[fdchild];
+   parentPath = names[fdparent];
    length = sizeof filesAndDir / sizeof filesAndDir[0];
    
    for (i = 0; i < length; i++) 
@@ -172,7 +177,33 @@ fs_mkdir( char *fileName) {
 
 int 
 fs_rmdir( char *fileName) {
-    return -1;
+   int i;
+   int length;
+   iNode directory;
+   
+   length = sizeof names / sizeof names[0];
+   
+   for(i = 0; i < length; i++) 
+   {
+      /* if the directory exists */
+      if (strcmp(fileName, names[i] = 0)) 
+      {
+         directory = filesAndDir[i];
+         /* error if trying to remove a file using rmdir */
+         if (directory->info->type != DIRECTORY) return -1;
+         /* error if trying to remove dir with existing links */
+         if (directory->info->links > 0) return -1;
+         /* free structs and NULL out array items */
+         free(directory->info);
+         free(directory->data);
+         free(directory->nextFile);
+         directory[i] = NULL;
+         names[i] = NULL;
+         return 0;
+      }
+   }
+   /* error if dir does not exist */
+   return -1;
 }
 
 int 
