@@ -139,7 +139,7 @@ int
 fs_mkdir( char *fileName) {
    int fdchild;
    int fdparent;
-   int i = 0;
+   int i;
    iNode directory;
    iNode childFile;
    int length;
@@ -148,25 +148,24 @@ fs_mkdir( char *fileName) {
    fdchild = fs_open(".",FS_O_RDONLY);
    fdparent = fs_open ("..", FS_O_RDONLY);
    childFile = filesAndDir[fdchild];
-   length = sizeof filesAndDir / sizeof filesAndDir[i];
+   length = sizeof filesAndDir / sizeof filesAndDir[0];
    
-   while (filesAndDir[i] != NULL && i < length)
+   for (i = 0; i < length; i++) 
    {
-      i++;
       if (strcmp(names[i], fileName) == 0) return -1;
-   }
-   if (i < length) 
-   {
-      directory-> permissions = FS_O_RDONLY;
-      directory->data = childFile->data;
-      directory->fd = i;
-      directory->info->iNodeNo = i;
-      directory->info->type = DIRECTORY;
-      directory->info->links = 2;
-      directory->info->size = childFile->info->size;
-      directory->numBlocks = childFile->info->numBlocks;
-      /* need to add links once i figure out implementation */
-      return 0;
+      if (filesAndDir[i] == NULL) 
+      {
+         directory->permissions = FS_O_RDONLY;
+         directory->data = childFile->data;
+         directory->fd = i;
+         directory->info->iNodeNo = i;
+         directory->info->type = DIRECTORY;
+         directory->info->links = 2;
+         directory->info->size = childFile->info->size;
+         directory->info->numBlocks = childFile->info->numBlocks;
+         /* CALL FSLINK ONCE WE FIGURE OUT THAT IMPLEMENTATION */
+         return 0;
+      }
    }
    return -1;
 }
