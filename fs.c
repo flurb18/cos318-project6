@@ -60,7 +60,7 @@ fs_read( int fd, char *buf, int count) {
          if (charpointer == EOF) return i;
          else (
             buf[i] = (char)fp->data;
-            data++;
+            fp->data++;
          )
 
       }
